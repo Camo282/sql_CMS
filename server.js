@@ -7,6 +7,9 @@ const util = require('util');
 const PORT = process.env.PORT || 3001;
 const app = express();
 
+//Express middleware
+app.use(express.urlencoded({ extended: false}));
+app.use(express.json());
 
 // Connect to database
 const connection = mysql.createConnection(
@@ -22,10 +25,11 @@ const connection = mysql.createConnection(
   );
 
   connection.query = util.promisify(connection.query);
-
-//Express middleware
-app.use(express.urlencoded({ extended: false}));
-app.use(express.json());
+  
+  connection.connect(err => {
+    if (err) throw err;
+    prompt();
+});
 
 app.get('/', (req, res) => {
     res.json({
@@ -33,15 +37,14 @@ app.get('/', (req, res) => {
     });
 });
 
-connection.connect(err => {
-    if (err) throw err;
-    prompt();
-});
+
 
 // Default response for any other request (Not Found)
 app.use((req, res) => {
     res.status(404).end();
     });
+
+
 
 function prompt() {
         inquirer
@@ -65,9 +68,12 @@ function prompt() {
         .then(function (choice) {
             console.info('You chose:' + choice.cmsChoices);
     
-            switch (choice.option) {
+            switch (choice.cmsChoices) {
                 case 'View All Employees':
+                    console.log('it works');
+
                     viewEmployees();
+                    console.log('this should be working');
                     break;
                 case 'Add Employee':
                     addEmployee();
