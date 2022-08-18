@@ -102,11 +102,43 @@ function prompt() {
 
 function viewEmployees() {
    
-    const sql = `SELECT employee.*, role.title
-     AS role_id
+    const sql = `SELECT employee.*, role.title AS role_id 
     FROM employee
     LEFT JOIN role
      ON employee.role_id = role.id`;
+
+    connection.query(sql, function (err, res) {
+        if (err) throw err;
+        console.table(res);
+        prompt();
+    });
+}
+
+function addEmployee() {
+   
+    const sql = `INSERT INTO employee (id, first_name, last_name )`;
+
+    connection.query(sql, function (err, res) {
+        if (err) throw err;
+        console.table(res);
+        prompt();
+    });
+}
+
+function viewRoles() {
+   
+    const sql = `SELECT * FROM role`;
+
+    connection.query(sql, function (err, res) {
+        if (err) throw err;
+        console.table(res);
+        prompt();
+    });
+}
+
+function viewDepartments() {
+   
+    const sql = `SELECT * FROM department`;
 
     connection.query(sql, function (err, res) {
         if (err) throw err;
