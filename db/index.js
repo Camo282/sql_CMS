@@ -1,7 +1,18 @@
-const inquirer = require('inquirer');
+/*const inquirer = require('inquirer');
+const express = require('express');
+const router = express.Router();
 //const mysql = require('mysql2');
-const connection = require('.db/connection.js');
+const db = require('.db/connection.js');
 //const { allowedNodeEnvironmentFlags } = require('process');
+
+// Start server after DB connection
+db.connect(err => {
+    if (err) throw err;
+    console.log('Database connected.');
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  });
 
 inquirer
     .prompt([
@@ -16,7 +27,8 @@ inquirer
                 'View All Roles', 
                 'Add Role', 
                 'View All Departments', 
-                'Add Department'
+                'Add Department',
+                'Exit'
             ]
         },  
     ])
@@ -45,9 +57,25 @@ inquirer
             case 'Add Department':
                 addDepartment();
                 break;
+            case 'Exit':
+                connection.end();
+                break;
         };
     });
 
+    router.get('/employee', (req, res) => {
+        const sql = `SELECT * FROM employee`;
+        db.query(sql, (err, rows) => {
+            if(err) {
+                res.status(500).json({ error: err.message });
+                return;
+            }
+            res.json({
+                message: 'success',
+                data: rows
+            });
+        });
+    });
     function viewEmployees() {
         const sql = `SELECT * FROM employee`;
         connection.createQuery(sql, function (err, res) {
@@ -55,4 +83,4 @@ inquirer
             console.table(res);
             startPrompt();
         });
-    };
+    };*/

@@ -1,4 +1,4 @@
-
+/*Business department array*/
 INSERT INTO department (name)
 VALUES
     ('Sales'),
@@ -6,6 +6,7 @@ VALUES
     ('Finance'),
     ('Legal');
 
+/*Employee role, salary and department id array */
 INSERT INTO role (title, salary, department_id)
 VALUES
     ('Sales Lead', '1000000', 1),
@@ -17,6 +18,7 @@ VALUES
     ('Legal Team Lead', '250000', 4),
     ('Lawyer', '190000', 4);
 
+/*Employee array*/
 INSERT INTO employee (first_name, last_name, role_id, manager_id)
 VALUES
     ('John', 'Doe', 1, NULL),

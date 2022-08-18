@@ -1,4 +1,4 @@
-const mysql = require('mysql2');
+/*const mysql = require('mysql2');
 
 // Connect to database
 const db = mysql.createConnection(
@@ -13,4 +13,4 @@ const db = mysql.createConnection(
     console.log('Connected to the CMS database.')
   );
 
-  module.exports = db;
+  module.exports = db;*/
