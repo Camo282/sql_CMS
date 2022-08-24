@@ -216,6 +216,8 @@ function addDepartment() {
     })
 }
 
+
+
 // Start server after DB connection
 connection.connect(err => {
     if (err) throw err;
