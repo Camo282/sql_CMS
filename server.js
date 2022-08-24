@@ -101,11 +101,15 @@ function prompt() {
     };
 
 function viewEmployees() {
-   
-    const sql = `SELECT employee.*, role.title AS role_id 
+
+    const sql = `SELECT employee.*, role.title AS role_id, role.salary, department.name, CONCAT(manager.first_name, ' ' ,manager.last_name) AS manager
     FROM employee
     LEFT JOIN role
-     ON employee.role_id = role.id`;
+     ON employee.role_id = role.id
+    LEFT JOIN department
+     ON role.department_id = department.id
+     LEFT JOIN employee manager
+     ON manager.id = employee.manager_id`;
 
     connection.query(sql, function (err, res) {
         if (err) throw err;
@@ -115,7 +119,6 @@ function viewEmployees() {
 }
 
 function addEmployee() {
-   
     const sql = `INSERT INTO employee (id, first_name, last_name )`;
 
     connection.query(sql, function (err, res) {
@@ -136,6 +139,56 @@ function viewRoles() {
     });
 }
 
+function addRole() {
+    connection.query('SELECT * FROM  department', function(err, res) {
+        if (err) throw (err);
+        inquirer
+        .prompt([{
+            name: 'title',
+            type: 'input',
+            message: 'What is the title of the new role?',
+        },
+        {
+            name: 'salary',
+            type: 'input',
+            message: 'What is the salary of the new role?',
+        },
+        {
+            name: 'departmentName',
+            type: 'list',
+            message: 'Which department does this role belong to?',
+            choices: function() {
+                var choicesArray = [];
+                res.forEach(res=> {
+                    choicesArray.push(
+                        res.name
+                    );
+                })
+                return choicesArray;
+            }
+        }
+    ])
+    .then(function(answer) {
+        const department = answer.departmentName;
+        connection.query('SELECT * FROM department', function(err, res) {
+            if (err) throw (err);
+            let filteredDept = res.filter(function(res) {
+                return res.name == department;
+            })
+            let id = filteredDept[0].id;
+            let query = 'INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)';
+            let values = [answer.tilte, parseInt(answer.salary), id]
+            console.log(values);
+            connection.query(query, values, 
+                function(err, res, fields) {
+                    console.log(`You have added this role: ${(values[0]).toUpperCase()}.`)
+                })
+                viewRoles()
+        })
+    })
+    })
+}
+
 function viewDepartments() {
    
     const sql = `SELECT * FROM department`;
@@ -145,6 +198,22 @@ function viewDepartments() {
         console.table(res);
         prompt();
     });
+}
+
+function addDepartment() {
+    inquirer
+    .prompt({
+        name: 'department',
+        type: 'input',
+        message: 'What is the name of the new department?',
+    })
+    .then(function(answer) {
+        var query = 'INSERT INTO department (name) VALUES ( ? )';
+        connection.query(query, answer.department, function(err, res) {
+            console.log(`You have added this department: ${(answer.department).toUpperCase()}.`)
+        })
+        viewDepartments();
+    })
 }
 
 // Start server after DB connection
