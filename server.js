@@ -153,54 +153,49 @@ function addDepartment() {
 }
 
 function addRole() {
-    connection.query('SELECT * FROM  department', function(err, res) {
-        if (err) throw (err);
+    connection.query('SELECT * FROM  department', (err, departments) => {
+        if (err) console.log(err);
+        departments = departments.map((department) => {
+            return {
+                name: department.name,
+                value: department.id,
+            };
+        });
         inquirer
-        .prompt([{
-            name: 'title',
+        .prompt([
+        {
             type: 'input',
+            name: 'title',
             message: 'What is the title of the new role?',
         },
         {
-            name: 'salary',
             type: 'input',
+            name: 'salary',
             message: 'What is the salary of the new role?',
         },
         {
-            name: 'departmentName',
             type: 'list',
+            name: 'departmentName',
             message: 'Which department does this role belong to?',
-            choices: function() {
-                var choicesArray = [];
-                res.forEach(res=> {
-                    choicesArray.push(
-                        res.name
-                    );
-                })
-                return choicesArray;
-            }
-        }
-    ])
-    .then(function(answer) {
-        const department = answer.departmentName;
-        connection.query('SELECT * FROM department', function(err, res) {
-            if (err) throw (err);
-            let filteredDept = res.filter(function(res) {
-                return res.name == department;
-            })
-            let id = filteredDept[0].id;
-            let query = 'INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)';
-            let values = [answer.tilte, parseInt(answer.salary), id]
-            console.log(values);
-            connection.query(query, values, 
-                function(err, res, fields) {
-                    console.log(`You have added this role: ${(values[0]).toUpperCase()}.`)
-                })
-                viewRoles()
-        })
-    })
-    })
-}
+            choices: departments,
+        },
+    ])    
+    .then((data) => {
+        connection.query(
+        'INSERT INTO role SET ?', 
+        {
+            title: data.title,
+            salary: data.salary,
+            department_id: data.departmentName,
+        },
+    );
+    
+    console.log('added new employee role to database!')
+    viewRoles();
+        });
+    });
+};
+
 
 function addEmployee() {
     connection.query('SELECT * FROM role', (err, roles) => {
@@ -303,7 +298,7 @@ const updateRole = () => {
                 }
                 );
                 console.log('Employee role updated');
-                viewAllRoles();
+                viewRoles();
             });
         });
     });
